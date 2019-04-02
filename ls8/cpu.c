@@ -9,17 +9,17 @@
  * Read / Write ram
  */
 
-// function to read cpu ram, takes cpu struct and int index
-unsigned char cpu_ram_read(struct cpu *cpu, int index)
+// function to read cpu ram, takes cpu struct and int address
+unsigned char cpu_ram_read(struct cpu *cpu, int address)
 {
-  // return cpu ram value at inex
-  return cpu->ram[index];
+  // return cpu ram value at address
+  return cpu->ram[address];
 }
-// function to write cpu ram, takes cpu struct, int index, value, no return
-void cpu_ram_write(struct cpu *cpu, int index, unsigned char value)
+// function to write cpu ram, takes cpu struct, int address, value, no return
+void cpu_ram_write(struct cpu *cpu, int address, unsigned char value)
 {
-  // assign value to cpu ram at index
-  cpu->ram[index] = value;
+  // assign value to cpu ram at address
+  cpu->ram[address] = value;
 }
 /**
  * Load the binary bytes from a .ls8 source file into a RAM array
@@ -85,20 +85,20 @@ void cpu_run(struct cpu *cpu)
     {
     case HLT:
       running = 0;
-      // cpu->pc += 1;
-      // exit(1);
+      cpu->pc += 1;
+      exit(1);
       break;
     case LDI:
       cpu->registers[operandA] = operandB;
-      // cpu->pc += 3;
+      cpu->pc += 3;
       break;
     case PRN:
       printf("%d\n", cpu->registers[operandA]);
-      // cpu->pc += 2;
+      cpu->pc += 2;
       break;
     default:
       printf("Unrecognized instruction\n");
-      // exit(1);
+      exit(1);
       break;
     }
     // 3. Get the appropriate value(s) of the operands following this instruction
