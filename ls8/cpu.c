@@ -1,7 +1,26 @@
+#include <stdlib.h>
+#include <string.h>
+#include <stdio.h>
 #include "cpu.h"
 
 #define DATA_LEN 6
 
+/**
+ * Read / Write ram
+ */
+
+// function to read cpu ram, takes cpu struct and int index
+unsigned char cpu_ram_read(struct cpu *cpu, int index)
+{
+  // return cpu ram value at inex
+  return cpu->ram[index];
+}
+// function to write cpu ram, takes cpu struct, int index, value, no return
+void cpu_ram_write(struct cpu *cpu, int index, unsigned char value)
+{
+  // assign value to cpu ram at index
+  cpu->ram[index] = value;
+}
 /**
  * Load the binary bytes from a .ls8 source file into a RAM array
  */
@@ -48,12 +67,40 @@ void alu(struct cpu *cpu, enum alu_op op, unsigned char regA, unsigned char regB
 void cpu_run(struct cpu *cpu)
 {
   int running = 1; // True until we get a HLT instruction
+  // init
 
   while (running)
   {
     // TODO
     // 1. Get the value of the current instruction (in address PC).
+    // init instruction register to the return value of cpu ram read function
+    // pass in cpu and cpu pc register memory address
+    unsigned char IR = cpu_ram_read(cpu, cpu->pc);
+    // read bytes at pc+1 pass to operandA
+    unsigned char operandA = cpu_ram_read(cpu, cpu->pc + 1);
+    // read bytes at pc+2 pass to operandB
+    unsigned char operandB = cpu_ram_read(cpu, cpu->pc + 2);
     // 2. Figure out how many operands this next instruction requires
+    switch (IR)
+    {
+    case HLT:
+      running = 0;
+      // cpu->pc += 1;
+      // exit(1);
+      break;
+    case LDI:
+      cpu->registers[operandA] = operandB;
+      // cpu->pc += 3;
+      break;
+    case PRN:
+      printf("%d\n", cpu->registers[operandA]);
+      // cpu->pc += 2;
+      break;
+    default:
+      printf("Unrecognized instruction\n");
+      // exit(1);
+      break;
+    }
     // 3. Get the appropriate value(s) of the operands following this instruction
     // 4. switch() over it to decide on a course of action.
     // 5. Do whatever the instruction should do according to the spec.
@@ -74,21 +121,4 @@ void cpu_init(struct cpu *cpu)
   memset(cpu->registers, 0, 8);
   // init cpu ram to 0
   memset(cpu->ram, 0, 256);
-}
-
-/**
- * Read / Write ram
- */
-
-// function to read cpu ram, takes cpu struct and int index
-unsigned char cpu_ram_read(struct cpu *cpu, int index)
-{
-  // return cpu ram value at inex
-  return cpu->ram[index];
-}
-// function to write cpu ram, takes cpu struct, int index, value, no return
-void cpu_ram_write(struct cpu *cpu, int index, unsigned char value)
-{
-  // assign value to cpu ram at index
-  cpu->ram[index] = value;
 }
