@@ -46,11 +46,43 @@ void cpu_load(struct cpu *cpu, char *filename)
   // }
 
   // TODO: Replace this with something less hard-coded
+  // open file, only need read, file pointer
+  FILE *fp = fopen(filename, "r");
+  // handle error when fp doesnt exist
+  if (fp == NULL)
+  {
+    printf("error filename does not exist\n");
+    exit(1);
+  }
+  // init temp buffer for str pointer,
+  char buffer[256];
+  // init register address to 0 to write in ram
+  int address = 0;
+
+  // read contents line by line, save appropriate data into RAM
+  // fgets(char *str, int n, FILE *stream) while this holds true
+  while (fgets(buffer, sizeof(buffer), fp) != NULL)
+  {
+    // init end ptr
+    char *ptr;
+    // ignore blank lines and everything after #, (comments)
+    if (ptr == buffer)
+    {
+      // convert binary strings to integer values to store in RAM, strtoul()
+      // strtoul(char *str, char **endptr, int base )
+      unsigned char value = strtoul(buffer, &ptr, 2);
+      // write address with value
+      cpu_ram_write(cpu, address++, value);
+    }
+  }
+  // close fp
+  fclose(fp);
 }
 
 // /**
 //  * ALU
 //  */
+// / alu arithmetic-logic unit
 // void alu(struct cpu *cpu, enum alu_op op, unsigned char regA, unsigned char regB)
 // {
 //   switch (op)
