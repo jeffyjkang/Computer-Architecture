@@ -21,27 +21,29 @@ void cpu_ram_write(struct cpu *cpu, int address, unsigned char value)
   // assign value to cpu ram at address
   cpu->ram[address] = value;
 }
+
 /**
  * Load the binary bytes from a .ls8 source file into a RAM array
  */
-void cpu_load(struct cpu *cpu)
+// update cpu_load to accept second arg filename
+void cpu_load(struct cpu *cpu, char *filename)
 {
-  char data[DATA_LEN] = {
-      // From print8.ls8
-      0b10000010, // LDI R0,8
-      0b00000000,
-      0b00001000,
-      0b01000111, // PRN R0
-      0b00000000,
-      0b00000001 // HLT
-  };
+  // char data[DATA_LEN] = {
+  //     // From print8.ls8
+  //     0b10000010, // LDI R0,8
+  //     0b00000000,
+  //     0b00001000,
+  //     0b01000111, // PRN R0
+  //     0b00000000,
+  //     0b00000001 // HLT
+  // };
 
-  int address = 0;
+  // int address = 0;
 
-  for (int i = 0; i < DATA_LEN; i++)
-  {
-    cpu->ram[address++] = data[i];
-  }
+  // for (int i = 0; i < DATA_LEN; i++)
+  // {
+  //   cpu->ram[address++] = data[i];
+  // }
 
   // TODO: Replace this with something less hard-coded
 }
@@ -81,24 +83,42 @@ void cpu_run(struct cpu *cpu)
     // read bytes at pc+2 pass to operandB
     unsigned char operandB = cpu_ram_read(cpu, cpu->pc + 2);
     // 2. Figure out how many operands this next instruction requires
+    // switch statement for Instruction register
     switch (IR)
     {
+      //for case halt, halt cpu and exit the emulator
     case HLT:
+      // change value of running to stop the while loop
       running = 0;
-      cpu->pc += 1;
+      //
+      // cpu->pc += 1;
+      // exit code
       exit(1);
+      // break
       break;
+      // case LDI, load immediate, stor value in register
     case LDI:
+      // value in cpu registers operandA or pc ram address 1, assign to pc ram address 2
       cpu->registers[operandA] = operandB;
+      // move to ram address 3
       cpu->pc += 3;
+      // break
       break;
+      // case print
     case PRN:
+      // print value of cpu registers cpu->pc +1 address
       printf("%d\n", cpu->registers[operandA]);
+      // move to address 3
       cpu->pc += 2;
+      // break
       break;
+      // default case
     default:
+      // error for unknown instructions
       printf("Unrecognized instruction\n");
+      //exit code
       exit(1);
+      // break
       break;
     }
     // 3. Get the appropriate value(s) of the operands following this instruction
