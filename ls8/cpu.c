@@ -46,20 +46,20 @@ void cpu_load(struct cpu *cpu)
   // TODO: Replace this with something less hard-coded
 }
 
-/**
- * ALU
- */
-void alu(struct cpu *cpu, enum alu_op op, unsigned char regA, unsigned char regB)
-{
-  switch (op)
-  {
-  case ALU_MUL:
-    // TODO
-    break;
+// /**
+//  * ALU
+//  */
+// void alu(struct cpu *cpu, enum alu_op op, unsigned char regA, unsigned char regB)
+// {
+//   switch (op)
+//   {
+//   case ALU_MUL:
+//     // TODO
+//     break;
 
-    // TODO: implement more ALU ops
-  }
-}
+//     // TODO: implement more ALU ops
+//   }
+// }
 
 /**
  * Run the CPU
