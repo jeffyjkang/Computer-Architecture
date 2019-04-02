@@ -64,36 +64,37 @@ void cpu_load(struct cpu *cpu, char *filename)
   while (fgets(buffer, sizeof(buffer), fp) != NULL)
   {
     // init end ptr
-    char *ptr;
+    // char *ptr;
     // ignore blank lines and everything after #, (comments)
-    if (ptr == buffer)
-    {
-      // convert binary strings to integer values to store in RAM, strtoul()
-      // strtoul(char *str, char **endptr, int base )
-      unsigned char value = strtoul(buffer, &ptr, 2);
-      // write address with value
-      cpu_ram_write(cpu, address++, value);
-    }
+    // if (ptr == buffer)
+    // {
+    // convert binary strings to integer values to store in RAM, strtoul()
+    // strtoul(char *str, char **endptr, int base )
+    unsigned char value = strtoul(buffer, NULL, 2);
+    // write address with value
+    cpu_ram_write(cpu, address++, value);
   }
+  // }
   // close fp
   fclose(fp);
 }
 
-// /**
-//  * ALU
-//  */
-// / alu arithmetic-logic unit
-// void alu(struct cpu *cpu, enum alu_op op, unsigned char regA, unsigned char regB)
-// {
-//   switch (op)
-//   {
-//   case ALU_MUL:
-//     // TODO
-//     break;
+/**
+ * ALU
+ */
+// alu arithmetic-logic unit
+void alu(struct cpu *cpu, enum alu_op op, unsigned char regA, unsigned char regB)
+{
+  switch (op)
+  {
+  case ALU_MUL:
+    // TODO
+    cpu->registers[regA] *= cpu->registers[regB];
+    break;
 
-//     // TODO: implement more ALU ops
-//   }
-// }
+    // TODO: implement more ALU ops
+  }
+}
 
 /**
  * Run the CPU
@@ -143,6 +144,13 @@ void cpu_run(struct cpu *cpu)
       // move to address 3
       cpu->pc += 2;
       // break
+      break;
+      // case mul
+    case MUL:
+      // invoke algorithimic logic unit, pass in cpu, operator, values
+      alu(cpu, ALU_MUL, operandA, operandB);
+      // move address 3
+      cpu->pc += 3;
       break;
       // default case
     default:
