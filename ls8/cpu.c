@@ -23,6 +23,31 @@ void cpu_ram_write(struct cpu *cpu, int address, unsigned char value)
 }
 
 /**
+ * push/ pop instructions
+ */
+// SP r7 stack pointer, register 7
+// function to pop value of cpu registers at top
+unsigned char cpu_pop(struct cpu *cpu)
+{
+  // copy value from address pointed to by sp to given register
+  // invoke cpu ram read pass in register address
+  unsigned char value = cpu_ram_read(cpu, cpu->registers[7]);
+  // increment sp
+  cpu->registers[7]++;
+  // return value
+  return value;
+}
+// function to push value to cpu registers at top
+void cpu_push(struct cpu *cpu, unsigned char value)
+{
+  // decrement the sp
+  cpu->registers[7]--;
+  // copy value in the given register to address pointed to by sp
+  // invoke cpu ram write func pass in register address 7  and value
+  cpu_ram_write(cpu, cpu->registers[7], value);
+}
+
+/**
  * Load the binary bytes from a .ls8 source file into a RAM array
  */
 // update cpu_load to accept second arg filename
@@ -151,6 +176,22 @@ void cpu_run(struct cpu *cpu)
       alu(cpu, ALU_MUL, operandA, operandB);
       // move address 3
       cpu->pc += 3;
+      break;
+    // case pop
+    case POP:
+      // assign return of cpu_pop to cpu registers at operand a
+      cpu->registers[operandA] = cpu_pop(cpu);
+      // move address 2
+      cpu->pc += 2;
+      //break
+      break;
+    // case push
+    case PUSH:
+      // invoke cpu push pass in operand a
+      cpu_push(cpu, cpu->registers[operandA]);
+      // move address 2
+      cpu->pc += 2;
+      // break
       break;
       // default case
     default:
