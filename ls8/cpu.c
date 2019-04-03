@@ -116,6 +116,9 @@ void alu(struct cpu *cpu, enum alu_op op, unsigned char regA, unsigned char regB
     // TODO
     cpu->registers[regA] *= cpu->registers[regB];
     break;
+  case ALU_ADD:
+    cpu->registers[regA] += cpu->registers[regB];
+    break;
 
     // TODO: implement more ALU ops
   }
@@ -157,6 +160,7 @@ void cpu_run(struct cpu *cpu)
       // case LDI, load immediate, stor value in register
     case LDI:
       // value in cpu registers operandA or pc ram address 1, assign to pc ram address 2
+      printf("ldi");
       cpu->registers[operandA] = operandB;
       // move to ram address 3
       cpu->pc += 3;
@@ -177,6 +181,11 @@ void cpu_run(struct cpu *cpu)
       // move address 3
       cpu->pc += 3;
       break;
+      // case add
+    case ADD:
+      alu(cpu, ALU_ADD, operandA, operandB);
+      cpu->pc += 3;
+      break;
     // case pop
     case POP:
       // assign return of cpu_pop to cpu registers at operand a
@@ -193,7 +202,19 @@ void cpu_run(struct cpu *cpu)
       cpu->pc += 2;
       // break
       break;
-      // default case
+    // case call
+    case CALL:
+      printf("call");
+      cpu_push(cpu, cpu->pc + 2);
+      printf("call after push");
+      cpu->pc = cpu->registers[operandA];
+      printf("call again");
+      break;
+    // case return
+    case RET:
+      cpu->pc = cpu_pop(cpu);
+      break;
+    // default case
     default:
       // error for unknown instructions
       printf("Unrecognized instruction\n");
