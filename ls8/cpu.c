@@ -95,9 +95,17 @@ void cpu_load(struct cpu *cpu, char *filename)
     // {
     // convert binary strings to integer values to store in RAM, strtoul()
     // strtoul(char *str, char **endptr, int base )
-    unsigned char value = strtoul(buffer, NULL, 2);
-    // write address with value
-    cpu_ram_write(cpu, address++, value);
+    if (buffer[0] == '#')
+    {
+      continue;
+    }
+    else
+    {
+
+      unsigned char value = strtoul(buffer, NULL, 2);
+      // write address with value
+      cpu_ram_write(cpu, address++, value);
+    }
   }
   // }
   // close fp
@@ -152,7 +160,7 @@ void cpu_run(struct cpu *cpu)
       // change value of running to stop the while loop
       running = 0;
       //
-      // cpu->pc += 1;
+      cpu->pc += 1;
       // exit code
       exit(1);
       // break
@@ -160,7 +168,7 @@ void cpu_run(struct cpu *cpu)
       // case LDI, load immediate, stor value in register
     case LDI:
       // value in cpu registers operandA or pc ram address 1, assign to pc ram address 2
-      printf("ldi");
+
       cpu->registers[operandA] = operandB;
       // move to ram address 3
       cpu->pc += 3;
@@ -204,11 +212,11 @@ void cpu_run(struct cpu *cpu)
       break;
     // case call
     case CALL:
-      printf("call");
+
       cpu_push(cpu, cpu->pc + 2);
-      printf("call after push");
+
       cpu->pc = cpu->registers[operandA];
-      printf("call again");
+
       break;
     // case return
     case RET:
@@ -239,6 +247,7 @@ void cpu_init(struct cpu *cpu)
   // memset syntax = ptr, value, number of bytes
   // init cpu pc to 0
   cpu->pc = 0;
+  cpu->registers[7] = 0xF4;
   // init cpu registers to 0
   memset(cpu->registers, 0, 8);
   // init cpu ram to 0
